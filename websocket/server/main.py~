@@ -1,0 +1,208 @@
+import datetime
+import json
+
+import tornado.web
+import tornado.httpserver
+import tornado.websocket
+import tornado.ioloop
+import tornado.options
+import tornado.httpclient
+from tornado.options import options,define
+
+import services
+import rt_redis
+
+from rt_settings import *
+
+define("port", default=8001, help="run on the given port", type=int)
+define('debug', default=False, group='application', help="run in debug mode (with automatic reloading)")
+
+def close_on_error(func):
+    return wrapper(func,close_on_error=True)
+
+def guard(func):
+    return wrapper(func,close_on_error = False)
+
+def wrapper(func,close_on_error):
+    def update_counter():
+        cl = rt_redis.get_client()
+        cl.incr('rt-errors')
+        
+    def wrap(self,*args,**kwargs):
+        try:
+            func(self,*args,**kwargs)
+        except Exception,e:
+            import traceback
+            print '=============================='
+            print '!!!ERROR!!!'
+            print 'Caught an error'
+            print e
+            print traceback.format_exc()
+            print '=============================='
+            update_counter()
+            if close_on_error:
+                self.unregister_and_close()
+    return wrap
+
+class StartStreamHandler(tornado.websocket.WebSocketHandler):
+    @guard
+    def update_online(self,is_online):
+        client = tornado.httpclient.HTTPClient()
+        offline_online = 'online' if is_online else 'offline'
+        address = WEB_SERVER 
+        url = 'http://%s/api/1/users/self/%s/?token=%s' % (address,offline_online,self.token)
+        response = client.fetch(url,user_agent="inplay tornado",method="POST",body='',headers=None)
+        if response.code != 201:
+            raise Exception('Failed in call to http %s with %s' % response.error)
+        if is_online:
+            services.ack_none(self,self.sess_id)
+            
+    @close_on_error
+    def open(self):
+        print('----------------------------------------------------------')
+        try:
+            token = self.get_argument('token')
+        except Exception:
+            raise Exception('token is mandatory')
+        self.legal = False
+        self.user_id,self.sess_id = rt_redis.get_token_data(token)
+        self.token = token
+        print('%s: open user_id = %s token = %s sess_id = %s' % (self.__class__.__name__,self.user_id,token,self.sess_id))
+        self.application.manager.register(self)
+        self.update_online(True)
+        self.legal = True
+        print('open ended successfully for user_id = %s sess_id = %s' % (self.user_id,self.sess_id))
+        
+    def is_legal(self):
+        return getattr(self,'legal',False)
+
+    def unregister_and_close(self):
+        self.close_ops()
+        self.close()
+            
+    def on_close(self):
+        print('----------------------------------------------------------')
+        if self.is_legal():
+            print('%s: on_close user_id = %s sess_id = %s' % (self.__class__.__name__,self.user_id,self.sess_id))
+        else:
+            print('%s: on_close' % (self.__class__.__name__))
+        self.close_ops()
+        
+        
+    def close_ops(self):
+        if self.is_legal():
+            self.update_online(False)
+            self.application.manager.unregister(self)
+
+    @guard
+    def on_message(self, message):
+        message = json.loads(message)
+        token = message['token']
+        if token != self.token:
+            raise Exception('Illegal token')
+        kind = message['kind']
+        data = message['data']
+        if kind == 'ack':
+            acked_item_id = data['acked_item_id']
+            services.ack_item(self,self.sess_id,acked_item_id)
+        else:
+            raise Exception('Illegal kind')
+        print('%s: on_message message = %s' % (self.__class__.__name__,message))
+
+class SocketManager(object):
+    def __init__(self,stream_id,debug,debug_info):
+        print 'SocketManager __init__ with:'
+        print 'stream_id = %s' % (stream_id)
+        print 'debug = %s' % (debug)
+        print 'debug_info = %s' % (debug_info)
+        self.handlers = dict()
+        self.stream_id = stream_id
+        self.debug = debug
+        self.debug_info = debug_info
+        tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=10), self.handle_messages)
+        
+    def register(self,handler):
+        old = self.handlers.get(handler.sess_id,None)
+        if old:
+            old.unregister_and_close()
+        self.handlers[handler.sess_id] = handler
+        
+    def unregister(self,handler):
+        if handler.is_legal() and handler.sess_id in self.handlers:
+            del self.handlers[handler.sess_id] 
+            
+    def handle_messages(self):
+        p = rt_redis.get_client().pipeline()
+        key = 'ws_stream:%d' % self.stream_id
+        p.lrange(key, 0,-1)
+        p.delete(key)
+        res = p.execute()
+        new_messages = res[0]
+        if len(new_messages) > 0:
+            print('In handle_messages: # of messages = %s' % (len(new_messages))) 
+        for sess_msg in new_messages:
+            (sess_id,_,msg) = sess_msg.partition(':')
+            h = self.handlers.get(int(sess_id))
+            if self.debug_info:
+                if msg != '<close>':
+                    loaded_msg = json.loads(msg)
+                    debug_info = '[%s %s]' % (loaded_msg['item_id'],loaded_msg['kind'])
+                else:
+                    debug_info = '<close>'
+            else:
+                debug_info = ''
+            if h:
+                if msg == '<close>':
+                    self.unregister(h)
+                    to_print = True
+                    result = 'closed!!!'
+                    h.close()
+                    item_id = ''
+                    kind = ''
+                else:
+                    h.write_message(msg)
+                    result = 'message written'
+                    to_print = True
+            else:
+                result = 'no WS for session'
+                to_print = False
+            if to_print:
+                print('\tsess_id = %s ==> %s %s' % (sess_id,debug_info,result))
+        tornado.ioloop.IOLoop.instance().add_timeout(datetime.timedelta(seconds=0.05), self.handle_messages)
+class InplayWsApplication(tornado.web.Application):
+    def __init__(self):
+        handlers = [
+            (r'/websockets/open/',StartStreamHandler)
+        ]
+        
+        settings = dict()
+        
+        stream_id = options.stream_id
+        
+        settings.update(**options.group_dict("application")) 
+        
+        tornado.web.Application.__init__(self, handlers, **settings)
+        
+        self.manager = SocketManager(stream_id,options.debug,DEBUG_INFO)
+    
+    def print_settings(self):
+        for (k,v) in self.settings.iteritems():
+            print('%s = %s' % (k,v))
+            
+def main():
+    tornado.options.parse_command_line()
+    app = InplayWsApplication()
+    server = tornado.httpserver.HTTPServer(app)
+    print('=================================================')
+    app.print_settings()
+    if not options.stream_id:
+        raise Exception('Stream id must be > 0 and integer')
+    print('Listening to port %s' % (options.port))
+    print('WEB_SERVER = %s' % (WEB_SERVER))
+    print('INPLAY_REDIS_HOST = %s' % (INPLAY_REDIS_HOST))
+    print('stream_id = %s' % (options.stream_id))
+    print('=================================================')
+    server.listen(options.port)
+    tornado.ioloop.IOLoop.instance().start()
+
+    

@@ -1,0 +1,8 @@
+class A(object):
+    x = 100
+
+class B(object):
+    pass
+
+class C(object):
+    pass
