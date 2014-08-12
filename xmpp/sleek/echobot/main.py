@@ -21,13 +21,54 @@ else:
     raw_input = input
 
 
+class EchoBot(sleekxmpp.ClientXMPP):
+
+    def __init__(self, jid, password):
+        super(EchoBot, self).__init__(jid, password)
+        self.add_event_handler('session_start', self.start)
+        self.add_event_handler('message', self.message)
+
+    def start(self, event):
+        self.send_presence()
+        self.get_roster()
+
+    def message(self, msg):
+        if msg['type'] in ('normal', 'chat'):
+            msg.reply("Thanks for sending:\n%s" % msg['body']).send()
+
+
+
+
 '''Here we will create out echo bot class'''
 
 if __name__ == '__main__':
-    '''Here we will configure and read command line options'''
+    optp = OptionParser()
+    optp.add_option('-d', '--debug', help='set logging to DEBUG',
+                    action='store_const', dest='loglevel',
+                    const=logging.DEBUG, default=logging.INFO)
+    optp.add_option("-j", "--jid", dest="jid",
+                    help="JID to use")
+    optp.add_option("-p", "--password", dest="password",
+                    help="password to use")
 
-    '''Here we will instantiate our echo bot'''
+    opts, args = optp.parse_args()
 
-    '''Finally, we connect the bot and start listening for messages'''
+    if opts.jid is None:
+        opts.jid = raw_input("Username: ")
+    if opts.password is None:
+        opts.password = getpass.getpass("Password: ")
+
+    logging.basicConfig(level=opts.loglevel,
+                        format='%(levelname)-8s %(message)s')
+
+
+    xmpp = EchoBot(opts.jid, opts.password)
+    xmpp.register_plugin('xep_0030') # Service Discovery
+    xmpp.register_plugin('xep_0199') # Ping
+
+    if xmpp.connect():#('talk.google.com', 5222)):
+        xmpp.process(block=True)
+    else:
+        print('Unable to connect')
 
 

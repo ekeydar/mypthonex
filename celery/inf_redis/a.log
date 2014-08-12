@@ -1,0 +1,70 @@
+[2014-03-29 14:00:53,546: WARNING/MainProcess] /usr/local/lib/python2.7/dist-packages/celery/apps/worker.py:161: CDeprecationWarning: 
+Starting from version 3.2 Celery will refuse to accept pickle by default.
+
+The pickle serializer is a security concern as it may give attackers
+the ability to execute any command.  It's important to secure
+your broker from unauthorized access when using pickle, so we think
+that enabling pickle should require a deliberate action and not be
+the default choice.
+
+If you depend on pickle then you should set a setting to disable this
+warning and to be sure that everything will continue working
+when you upgrade to Celery 3.2::
+
+    CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+
+You must only enable the serializers that you will actually use.
+
+
+  warnings.warn(CDeprecationWarning(W_PICKLE_DEPRECATED))
+[2014-03-29 14:00:53,577: INFO/MainProcess] Connected to redis://localhost:6379/1
+[2014-03-29 14:00:53,584: INFO/MainProcess] mingle: searching for neighbors
+[2014-03-29 14:00:54,590: INFO/MainProcess] mingle: all alone
+[2014-03-29 14:00:54,600: WARNING/MainProcess] celery@eran-MS-7788 ready.
+[2014-03-29 14:00:57,400: INFO/MainProcess] Received task: tasks.run_task[d790e123-7119-4036-9bbe-c03e91ea7425]
+[2014-03-29 14:00:57,402: WARNING/Worker-16] TASK-0 started
+[2014-03-29 14:00:57,902: INFO/MainProcess] Received task: tasks.run_task[c007ac2c-5cfe-4abf-bcd3-c5d6e637f5e8]
+[2014-03-29 14:00:57,904: WARNING/Worker-17] TASK-1 started
+[2014-03-29 14:00:58,404: INFO/MainProcess] Received task: tasks.run_task[0941586d-a8c1-411a-b9c3-44b0f62ca5f6]
+[2014-03-29 14:00:58,405: WARNING/Worker-13] TASK-2 started
+[2014-03-29 14:00:58,906: INFO/MainProcess] Received task: tasks.run_task[64fc3e79-3d0a-421d-827b-e3d6c599dfbf]
+[2014-03-29 14:00:58,908: WARNING/Worker-14] TASK-3 started
+[2014-03-29 14:00:59,408: INFO/MainProcess] Received task: tasks.run_task[0362e4e3-1203-49c8-9913-15d2d066f842]
+[2014-03-29 14:00:59,410: WARNING/Worker-15] TASK-4 started
+[2014-03-29 14:00:59,910: INFO/MainProcess] Received task: tasks.run_task[16c56099-9629-47b8-968b-1d252ce89ef9]
+[2014-03-29 14:00:59,912: WARNING/Worker-2] TASK-5 started
+[2014-03-29 14:01:00,412: INFO/MainProcess] Received task: tasks.run_task[03d44812-7e82-4a2c-978d-1b8c8d9db9d5]
+[2014-03-29 14:01:00,414: WARNING/Worker-1] TASK-6 started
+[2014-03-29 14:01:00,915: INFO/MainProcess] Received task: tasks.run_task[5af737df-17ac-4d5b-8543-211d92728a97]
+[2014-03-29 14:01:01,417: INFO/MainProcess] Received task: tasks.run_task[23a7d953-1826-4210-b7fe-8ead587331df]
+[2014-03-29 14:01:01,419: WARNING/Worker-3] TASK-8 started
+[2014-03-29 14:01:01,919: INFO/MainProcess] Received task: tasks.run_task[fb66fef6-7f91-46cd-ac1b-2436593914da]
+[2014-03-29 14:01:17,421: WARNING/Worker-16] TASK-0 done
+[2014-03-29 14:01:17,422: INFO/MainProcess] Task tasks.run_task[d790e123-7119-4036-9bbe-c03e91ea7425] succeeded in 20.020123196s: None
+[2014-03-29 14:01:17,924: WARNING/Worker-17] TASK-1 done
+[2014-03-29 14:01:17,925: INFO/MainProcess] Task tasks.run_task[c007ac2c-5cfe-4abf-bcd3-c5d6e637f5e8] succeeded in 20.021853861s: None
+[2014-03-29 14:01:18,424: WARNING/Worker-13] TASK-2 done
+[2014-03-29 14:01:18,424: INFO/MainProcess] Task tasks.run_task[0941586d-a8c1-411a-b9c3-44b0f62ca5f6] succeeded in 20.019705895s: None
+[2014-03-29 14:01:18,913: WARNING/Worker-14] TASK-3 done
+[2014-03-29 14:01:18,914: WARNING/Worker-14] TASK-9 started
+[2014-03-29 14:01:18,914: INFO/MainProcess] Task tasks.run_task[64fc3e79-3d0a-421d-827b-e3d6c599dfbf] succeeded in 20.006227203s: None
+[2014-03-29 14:01:19,428: WARNING/Worker-15] TASK-4 done
+[2014-03-29 14:01:19,429: INFO/MainProcess] Task tasks.run_task[0362e4e3-1203-49c8-9913-15d2d066f842] succeeded in 20.019600907s: None
+[2014-03-29 14:01:19,921: WARNING/Worker-2] TASK-5 done
+[2014-03-29 14:01:19,922: INFO/MainProcess] Task tasks.run_task[16c56099-9629-47b8-968b-1d252ce89ef9] succeeded in 20.010569588s: None
+[2014-03-29 14:01:20,435: WARNING/Worker-1] TASK-6 done
+[2014-03-29 14:01:20,436: WARNING/Worker-1] TASK-7 started
+[2014-03-29 14:01:20,436: INFO/MainProcess] Task tasks.run_task[03d44812-7e82-4a2c-978d-1b8c8d9db9d5] succeeded in 20.022020478s: None
+[2014-03-29 14:01:21,434: WARNING/Worker-3] TASK-8 done
+[2014-03-29 14:01:21,435: INFO/MainProcess] Task tasks.run_task[23a7d953-1826-4210-b7fe-8ead587331df] succeeded in 20.01637594s: None
+[2014-03-29 14:01:38,932: WARNING/Worker-14] TASK-9 done
+[2014-03-29 14:01:38,933: INFO/MainProcess] Task tasks.run_task[fb66fef6-7f91-46cd-ac1b-2436593914da] succeeded in 20.018980124s: None
+[2014-03-29 14:01:40,456: WARNING/Worker-1] TASK-7 done
+[2014-03-29 14:01:40,457: INFO/MainProcess] Task tasks.run_task[5af737df-17ac-4d5b-8543-211d92728a97] succeeded in 20.021135744s: None
+[2014-03-29 14:10:14,235: WARNING/MainProcess] Exception
+[2014-03-29 14:10:14,235: WARNING/MainProcess] KeyError
+[2014-03-29 14:10:14,235: WARNING/MainProcess] :
+[2014-03-29 14:10:14,235: WARNING/MainProcess] KeyError(140066029278976,)
+[2014-03-29 14:10:14,235: WARNING/MainProcess] in
+[2014-03-29 14:10:14,236: WARNING/MainProcess] <module 'threading' from '/usr/lib/python2.7/threading.pyc'>
+[2014-03-29 14:10:14,236: WARNING/MainProcess] ignored
