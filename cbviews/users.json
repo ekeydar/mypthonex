@@ -1,0 +1,10 @@
+{
+    "views": {
+        "by_team": {
+            "map": "function (doc, meta) {\n  if (meta.type == 'json' && doc.team_id) { \n  \temit(doc.team_id, null);\n  }\n}"
+        }, 
+        "by_chat": {
+            "map": "function (doc, meta) {\n  if (meta.type == 'json' && doc.chats) { \n    doc.chats.forEach(function(chat_id) {\n      emit([chat_id,doc.name],null);\n    });\n  }\n}"
+        }
+    }
+}

@@ -1,11 +1,22 @@
 import couchbase
 import os
+import json
+import random
 
 cb = couchbase.Couchbase()
 cl = cb.connect(bucket="main")
 
 def flush():
     os.system("/opt/couchbase/bin/couchbase-cli bucket-flush --cluster=localhost --bucket=main --force")
+
+def dump_ddocs():
+    dump_ddoc('users')
+
+def dump_ddoc(ddoc):
+    doc = cl.design_get(ddoc, use_devmode=True)
+    with open('%s.json'%ddoc,'w') as fh:
+        json.dump(doc.value,fh,indent=4)
+        print 'dumped ddoc %s to %s.json' % (ddoc,ddoc)
 
 def main():
     add_users(1000)
@@ -15,20 +26,35 @@ def sleep(secs):
     print 'Sleeping %s seconds' % secs
     time.sleep(secs)
 
+def read_names():
+    names = []
+    with open('names.txt') as fh:
+        for line in fh:
+            if len(line) > 2:
+                name = line.split()[0]
+                names.append(name)
+    return names
+
 def add_users(num):
     datas = dict()
+    names = read_names()
     for x in xrange(num):
         in10 = x % 10
         chats = [1+in10,1+(in10 + 5)%10,1+(in10 + 7)%10]
-        c1 = chr(num + ord('A') % 26)
-        c2 = chr(num + ord('A') % 26)
         data = dict(
             id = x,
-            name="%s%s" % (c1,c2,x)
+            name=random.choice(names),
             chats=chats,
             team_id=1+in10)
         datas['user:%s' % x] = data
     cl.add_multi(datas)
+
+def users_by_docids(docids):
+    kvs = cl.get_multi(docids)
+    result = []
+    for docid in docids:
+        result.append(kvs[docid].value)
+    return result
 
 def get_team_users(team_id,skip,limit=10):
     rows = cl.query('users','by_team',key=team_id,use_devmode=True,full_set=True,stale=False,limit=limit,skip=skip)
@@ -39,7 +65,9 @@ def get_teams_users(team_ids,skip,limit=10):
     return [row.docid for row in rows]
 
 def get_chat_users(chat_id,skip,limit=10):
-    rows = cl.query('users','by_chat',key=chat_id,use_devmode=True,full_set=True,stale=False,limit=limit,skip=skip)
+    rows = cl.query('users','by_chat',startkey=json.dumps([chat_id,'A']),use_devmode=True,full_set=True,stale=False,limit=limit,skip=skip)
+    docids = [row.docid for row in rows]
+    return users_by_docids(docids)
 
 if __name__ == '__main__':
     flush()
