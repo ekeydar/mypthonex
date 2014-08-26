@@ -8,9 +8,12 @@ def main():
 def add_users(num):
     datas = dict()
     for x in xrange(num):
+        in10 = x % 10
+        chats = [1+in10,1+(in10 + 5)%10,1+(in10 + 7)%10]
         data = dict(
             id = x,
             name="name%s" % x,
+            chats=chats,
             team_id=x%10)
         datas['user:%s' % x] = data
     cl.add_multi(datas)
