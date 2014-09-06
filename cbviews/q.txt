@@ -1,0 +1,4 @@
+1. how sorting behave, is , just translated into string or is this more sophisticated level1, level2 etc
+2. how to get the next set?
+3. how to specify end key
+
