@@ -21,7 +21,7 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
     def open(self):
-        LOGGER.info('opened')
+        LOGGER.info('opened successfully')
         self.write_message('welcome')
         
     def on_close(self):
