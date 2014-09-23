@@ -10,7 +10,7 @@ import tornado.httpclient
 from tornado.options import options,define
 
 define('debug', default=False, group='application', help="run in debug mode (with automatic reloading)")
-define('port',default=8003,group='application')
+define('port',default=9000,group='application')
 
 class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
