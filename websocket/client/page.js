@@ -29,7 +29,7 @@ function openWebSocket() {
 	alert('Already opened');
 	return;
     }
-    ws = new WebSocket("ws://localhost:8003/open/");
+    ws = new WebSocket("ws://54.208.172.48/open/");
     ws.onopen = function() {
 	console.log('onopen');
     }

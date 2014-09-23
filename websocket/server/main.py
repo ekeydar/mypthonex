@@ -8,6 +8,10 @@ import tornado.ioloop
 import tornado.options
 import tornado.httpclient
 from tornado.options import options,define
+import logging
+
+LOGGER = logging.getLogger("tornado.access")
+logging.Formatter.converter = time.gmtime # force UTC in logger
 
 define('debug', default=False, group='application', help="run in debug mode (with automatic reloading)")
 define('port',default=9000,group='application')
@@ -39,6 +43,7 @@ def main():
     app = MyApplication()
     server = tornado.httpserver.HTTPServer(app)
     server.listen(options.port)
+    LOGGER.info('options.port = %s' % options.port)
     tornado.ioloop.IOLoop.instance().start()
  
     
