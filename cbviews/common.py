@@ -1,4 +1,5 @@
 import couchbase
+import os
 
 def get_cl():
     cb = couchbase.Couchbase()
