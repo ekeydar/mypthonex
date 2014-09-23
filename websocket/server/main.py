@@ -14,7 +14,7 @@ import time
 LOGGER = logging.getLogger("tornado.access")
 logging.Formatter.converter = time.gmtime # force UTC in logger
 
-define('debug', default=False, group='application', help="run in debug mode (with automatic reloading)")
+define('debug', default=True, group='application', help="run in debug mode (with automatic reloading)")
 define('port',default=9000,group='application')
 
 class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
