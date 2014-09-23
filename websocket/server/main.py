@@ -9,6 +9,7 @@ import tornado.options
 import tornado.httpclient
 from tornado.options import options,define
 import logging
+import time
 
 LOGGER = logging.getLogger("tornado.access")
 logging.Formatter.converter = time.gmtime # force UTC in logger
