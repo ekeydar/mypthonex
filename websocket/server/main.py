@@ -21,14 +21,14 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
     def open(self):
-        print 'opened'
+        LOGGER.info('opened')
         self.write_message('welcome')
         
     def on_close(self):
-        print 'closed'
+        LOGGER.info('closed')
 
     def on_message(self, message):
-        print 'on_message message = %s' % (message)
+        LOGGER.info('on_message message = %s',message)
         self.write_message(message[::-1])
 
 class MyApplication(tornado.web.Application):
