@@ -30,9 +30,10 @@ function openWebSocket() {
 	alert('Already opened');
 	return;
     }
-    if (!uid_input) {
+    uid = uid_input.value
+    if (!uid) {
 	alert('must specify uid input')
-	return
+	return;
     }
     ws = new WebSocket("ws://54.208.172.48:9000/open/?uid="+uid);
     ws.onopen = function() {
@@ -42,8 +43,9 @@ function openWebSocket() {
 	console.log('onclose');
 	ws = null;
     }
-    ws.onerror = function(err) { 
-	console.log('onerror: ' + err)
+    ws.onerror = function(err) {
+    console.log('onerror: ' + JSON.stringify(err));
+	alert('onerror: ' + JSON.stringify(err));
     }
     ws.onmessage = function(event) {
 	msg = event.data;

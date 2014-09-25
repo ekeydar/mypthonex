@@ -23,7 +23,7 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         try:
-            self.uid = int(self.get_argument('id'))
+            self.uid = int(self.get_argument('uid'))
         except Exception,e:
             raise Exception('integer uid is mandatory')
         LOGGER.info('uid = %s: opened successfully uid = %s',self.uid)
