@@ -25,11 +25,16 @@ function main() {
 var ws = null;
 
 function openWebSocket() {
+    var uid_input = document.getElementById('uid_input')
     if (ws != null) {
 	alert('Already opened');
 	return;
     }
-    ws = new WebSocket("ws://54.208.172.48/open/");
+    if (!uid_input) {
+	alert('must specify uid input')
+	return
+    }
+    ws = new WebSocket("ws://54.208.172.48:9000/open/?uid="+uid);
     ws.onopen = function() {
 	console.log('onopen');
     }

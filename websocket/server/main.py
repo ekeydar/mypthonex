@@ -20,15 +20,22 @@ define('port',default=9000,group='application')
 class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
+
     def open(self):
-        LOGGER.info('opened successfully')
+        try:
+            self.uid = int(self.get_argument('id'))
+        except Exception,e:
+            raise Exception('integer uid is mandatory')
+        LOGGER.info('uid = %s: opened successfully uid = %s',self.uid)
         self.write_message('welcome')
+
         
     def on_close(self):
-        LOGGER.info('closed')
+        self.info('uid = %s closed',self.uid)
+
 
     def on_message(self, message):
-        LOGGER.info('on_message message = %s',message)
+        LOGGER.info('uid = %s on_message message = %s', self.uid, message)
         self.write_message(message[::-1])
 
 class MyApplication(tornado.web.Application):
