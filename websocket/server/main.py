@@ -27,7 +27,7 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
         except Exception,e:
             raise Exception('integer uid is mandatory')
         LOGGER.info('uid = %s: opened successfully uid = %s',self.uid)
-        self.write_message('welcome')
+        self.write_message('welcome %s' % self.uid)
 
         
     def on_close(self):
