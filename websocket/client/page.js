@@ -46,12 +46,12 @@ function openWebSocket() {
 	console.log('onopen');
     }
     ws.onclose = function(ev) {
-	console.log('onclose ' + JSON.stringify(arguments));
+	console.log('onclose: ' + ev.reason);
 	ws = null;
     }
     ws.onerror = function(err) {
     console.log('onerror: ' + JSON.stringify(err));
-	alert('onerror: ' + JSON.stringify(err));
+	alert('onerror: ' + err.reason);
     }
     ws.onmessage = function(event) {
 	msg = event.data;

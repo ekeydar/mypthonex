@@ -29,9 +29,10 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
         LOGGER.info('uid = %s: opened successfully',self.uid)
         if self.uid > 10:
             LOGGER.info('uid = %d - closing' % self.uid)
-            self.close(code=400,reason='uid too high')
-            return
-            #raise Exception('uid > 10')
+            raise Exception('uid > 10')
+            #self.close(code=400,reason='uid too high')
+            #return
+
         self.write_message('welcome %s' % self.uid)
 
 
