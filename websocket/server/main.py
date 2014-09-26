@@ -35,7 +35,7 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
 
         
     def on_close(self):
-        self.info('uid = %s: closed',self.uid)
+        LOGGER.info('uid = %s: closed',self.uid)
 
     def on_message(self, message):
         LOGGER.info('uid = %s: on_message message = %s', self.uid, message)

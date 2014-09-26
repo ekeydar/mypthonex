@@ -8,7 +8,12 @@ function main() {
 	openWebSocket();
     };
     btn_close.onclick = function() {
-	console.log('closed');
+    if (ws) {
+    ws.close();
+    console.log('closed');
+    } else {
+        console.log('no websocket open');
+    }
     }
     form_msg.onsubmit = function() {
 	if (!ws) {
