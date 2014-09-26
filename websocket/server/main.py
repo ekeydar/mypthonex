@@ -36,7 +36,7 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         LOGGER.info('uid = %s on_message message = %s', self.uid, message)
-        self.write_message(message[::-1])
+        self.write_message('%s said: %s' % (self.uid,message))
 
 class MyApplication(tornado.web.Application):
     def __init__(self):
