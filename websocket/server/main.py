@@ -26,10 +26,10 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
             self.uid = int(self.get_argument('uid'))
         except Exception,e:
             self.write_error(400,'integer uid is mandatory')
+        LOGGER.info('uid = %s: opened successfully',self.uid)
         if self.uid > 10:
             LOGGER.info('uid = %d - closing' % self.uid)
             self.close(code=400)
-        LOGGER.info('uid = %s: opened successfully',self.uid)
         self.write_message('welcome %s' % self.uid)
 
 
