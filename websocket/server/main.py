@@ -29,17 +29,16 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
         if self.uid > 10:
             LOGGER.info('uid = %d - closing' % self.uid)
             self.close(code=400)
-        LOGGER.info('uid = %s: opened successfully uid = %s',self.uid)
+        LOGGER.info('uid = %s: opened successfully',self.uid)
         self.write_message('welcome %s' % self.uid)
 
 
         
     def on_close(self):
-        self.info('uid = %s closed',self.uid)
-
+        self.info('uid = %s: closed',self.uid)
 
     def on_message(self, message):
-        LOGGER.info('uid = %s on_message message = %s', self.uid, message)
+        LOGGER.info('uid = %s: on_message message = %s', self.uid, message)
         self.write_message('%s said: %s' % (self.uid,message))
 
 class MyApplication(tornado.web.Application):

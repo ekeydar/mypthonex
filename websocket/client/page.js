@@ -13,6 +13,7 @@ function main() {
     form_msg.onsubmit = function() {
 	if (!ws) {
 	    alert('Start socket first');
+	    return;
 	}
 	var text = document.getElementById('input_text').value;
 	console.log('onsubmit text = ' + text);
