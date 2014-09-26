@@ -45,8 +45,8 @@ function openWebSocket() {
     ws.onopen = function() {
 	console.log('onopen');
     }
-    ws.onclose = function() {
-	console.log('onclose');
+    ws.onclose = function(ev) {
+	console.log('onclose ' + JSON.stringify(arguments));
 	ws = null;
     }
     ws.onerror = function(err) {
