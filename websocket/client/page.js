@@ -1,8 +1,15 @@
+var ADDR = 'ws-elb-1037942178.us-east-1.elb.amazonaws.com:9000'
+
 function main() {
     console.log('main');
     var btn_start = document.getElementById('button_start');
     var btn_close = document.getElementById('button_close');
     var form_msg = document.getElementById('form_msg');
+    var start_end_auto = document.getElementById('button_auto_start_end');
+    start_end_auto.onclick = function() {
+        auto=!auto;
+        refreshAuto();
+    }
     btn_start.onclick = function() {
 	console.log('started');
 	openWebSocket();
@@ -18,17 +25,37 @@ function main() {
     form_msg.onsubmit = function() {
 	if (!ws) {
 	    alert('Start socket first');
-	    return;
+	    return false;
 	}
 	var text = document.getElementById('input_text').value;
-	console.log('onsubmit text = ' + text);
+	//console.log('onsubmit text = ' + text);
 	ws.send(text);
 	return false;
     }
-    
+    refreshAuto();
 }
 
 var ws = null;
+
+var auto = false;
+var timer = null;
+var index = 1;
+
+function refreshAuto() {
+    document.getElementById('span_auto_status').innerHTML=(auto?"ON":"OFF");
+    document.getElementById('button_auto_start_end').innerHTML=(auto?"STOP AUTO":"START AUTO");
+    if (auto) {
+        index = 1;
+        timer = window.setInterval(function() {
+            ws.send('message ' + index);
+            index++;
+        },1000);
+    } else {
+        if (timer) {
+            window.clearInterval(timer);
+        }
+    }
+}
 
 function openWebSocket() {
     var uid_input = document.getElementById('uid_input')
@@ -41,7 +68,7 @@ function openWebSocket() {
 	alert('must specify uid input')
 	return;
     }
-    ws = new WebSocket("ws://54.208.172.48:9000/open/?uid="+uid);
+    ws = new WebSocket('ws://' + ADDR  + '/open/?uid='+uid);
     ws.onopen = function() {
 	console.log('onopen');
     }
