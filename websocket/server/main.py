@@ -10,6 +10,7 @@ import tornado.httpclient
 from tornado.options import options,define
 import logging
 import time
+import os
 
 LOGGER = logging.getLogger("tornado.access")
 logging.Formatter.converter = time.gmtime # force UTC in logger
@@ -21,6 +22,9 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
+    def get_user(self):
+        return '%s@%s' % (self.uid,os.uname()[1])
+
     def open(self):
         try:
             self.uid = int(self.get_argument('uid'))
@@ -28,17 +32,17 @@ class MyWebSocketHandler(tornado.websocket.WebSocketHandler):
             self.write_error(400,'integer uid is mandatory')
         LOGGER.info('uid = %s: opened successfully',self.uid)
         if self.uid > 10:
-            LOGGER.info('uid = %d - closing' % self.uid)
+            LOGGER.info('%s closing' % self.uid)
             self.close(code=400,reason='uid too high')
             return
-        self.write_message('welcome %s' % self.uid)
+        self.write_message('welcome %s' % self.get_user())
 
     def on_close(self):
         LOGGER.info('uid = %s: closed',self.uid)
 
     def on_message(self, message):
         LOGGER.info('uid = %s: on_message message = %s', self.uid, message)
-        self.write_message('%s said: %s' % (self.uid,message))
+        self.write_message('%s said: %s' % (self.get_user(),message))
 
 class MyApplication(tornado.web.Application):
     def __init__(self):

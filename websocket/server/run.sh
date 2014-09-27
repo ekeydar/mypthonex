@@ -6,6 +6,7 @@ sudo apt-get install --yes git
 sudo apt-get install --yes python-pip
 sudo apt-get install --yes python-dev
 sudo pip install tornado
+sudo pip install ipython
 mkdir -p ~/work
 cd work
 git clone https://github.com/ekeydar/mypthonex.git
