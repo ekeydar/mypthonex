@@ -1,5 +1,6 @@
 import couchbase
 import os
+import json
 
 def get_cl():
     cb = couchbase.Couchbase()
@@ -17,3 +18,10 @@ def dump_ddoc(ddoc):
     with open('%s.json'%ddoc,'w') as fh:
         json.dump(doc.value,fh,indent=4)
         print 'dumped ddoc %s to %s.json' % (ddoc,ddoc)
+
+def upload_ddoc(ddoc):
+    with open('%s.json'%ddoc,'r') as fh:
+        content = json.load(fh)
+        cl = get_cl()
+        cl.design_create(ddoc,content)
+        print 'uploaded ddoc %s from %s.json' % (ddoc,ddoc)
