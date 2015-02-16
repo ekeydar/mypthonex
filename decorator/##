@@ -1,0 +1,17 @@
+def retry(count,func):
+    max_x = count
+    def _wrap(self,*args,**kwargs):
+        for x in xrange(max_x):
+            try:
+                return func(self,*args,**kwargs)
+            except Exception,e:
+                self.title('Try again (%d/%d)' % (x+1,max_x))
+                self.sleep_say(1)
+        return func(self,*args,**kwargs)
+    return _wrap
+                
+@retry
+def foo(x):
+    print '-------------------'
+    print x
+    print '-------------------'
