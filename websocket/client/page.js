@@ -1,4 +1,4 @@
-var ADDR = 'ws-elb-1037942178.us-east-1.elb.amazonaws.com:9000'
+var ADDR = 'ws://localhost:9001/websockets/open/?token=238e0375db25ccd3524e5023e0d5fb2d0'
 
 function main() {
     console.log('main');
